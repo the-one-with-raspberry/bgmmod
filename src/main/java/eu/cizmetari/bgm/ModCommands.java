@@ -68,6 +68,31 @@ public class ModCommands {
                                 Commands.literal("stop_all")
                                         .executes(ctx -> {BackgroundMusicMod.clearSounds();return 1;})
                         )
+                        .then(
+                                Commands.literal("stop_file")
+                                        .then(
+                                                Commands.argument("file", StringArgumentType.string())
+                                                        .executes(ctx -> {
+                                                            Path path;
+                                                            try {
+                                                                path = Path.of(StringArgumentType.getString(ctx, "file")).toAbsolutePath().normalize();
+                                                            } catch (InvalidPathException e) {
+                                                                throw new SimpleCommandExceptionType(
+                                                                        Component.literal("Invalid file path!")
+                                                                ).create();
+                                                            }
+                                                            if (Files.notExists(path)) {
+                                                                throw new SimpleCommandExceptionType(Component.literal("File does not exist!")).create();
+                                                            }
+                                                            for (Map.Entry<Integer, SoundEntry> kv : BackgroundMusicMod.PLAYING_SOUNDS.get().entrySet()) {
+                                                                if (kv.getValue().playingFile() == path) {
+                                                                    Sounds.stopSound(kv.getKey());
+                                                                }
+                                                            }
+                                                            return 1;
+                                                        })
+                                        )
+                        )
         );
     }
 

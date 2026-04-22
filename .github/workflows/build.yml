@@ -28,3 +28,10 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: Upload as artifact
+        uses: actions/upload-artifact@v7
+        with:
+          path: build/libs/bgm-*.*.*.jar
+          name: release
+          archive: false
