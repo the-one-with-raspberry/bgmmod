@@ -1,0 +1,13 @@
+{
+  "itemGroup.bgm": "Example Mod Tab",
+  "block.bgm.example_block": "Example Block",
+  "item.bgm.example_item": "Example Item",
+
+  "bgm.configuration.title": "Background Music Mod Configs",
+  "bgm.configuration.section.bgm.common.toml": "Background Music Mod Configs",
+  "bgm.configuration.section.bgm.common.toml.title": "Background Music Mod Configs",
+  "bgm.configuration.items": "Item List",
+  "bgm.configuration.logDirtBlock": "Log Dirt Block",
+  "bgm.configuration.magicNumberIntroduction": "Magic Number Text",
+  "bgm.configuration.magicNumber": "Magic Number"
+}
