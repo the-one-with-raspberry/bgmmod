@@ -1,25 +1,14 @@
+Background Music Mod
+======
+Background Music Mod is a client mod that allows players to play audio files directly using chat commands and a file name instead of using Minecraft's (rather restrictive and difficult to use) Sound Events system.
 
-Installation information
-=======
-
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
-
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
-
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
-
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
-
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+Usage
+======
+## To play an audio file:
+Run `/bgm play <file_path>`. The chat will return a number that corresponds to the ID of the source. It can also be looped using `/bgm play <file_path> true`.
+## To stop an audio file:
+Run `/bgm stop_id <id>`.
+## To see currently playing audio files:
+Run `/bgm list`.
+## To stop all audio files:
+Run `/bgm stop_all`.
