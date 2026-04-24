@@ -1,11 +1,9 @@
 package eu.cizmetari.bgm;
 
-import eu.cizmetari.bgm.additions.LoadPersistentObject;
 import eu.cizmetari.bgm.sound.SoundEntry;
 import eu.cizmetari.bgm.sound.Sounds;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import org.slf4j.Logger;
 
@@ -28,7 +26,7 @@ public class BackgroundMusicMod {
     public static final String MOD_ID = "bgm";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static LoadPersistentObject<Map<Integer, SoundEntry>> PLAYING_SOUNDS = new LoadPersistentObject<>(HashMap::new);
+    public static Map<Integer, SoundEntry> PLAYING_SOUNDS = new HashMap<>();
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -42,7 +40,6 @@ public class BackgroundMusicMod {
         NeoForge.EVENT_BUS.register(this);
 
         NeoForge.EVENT_BUS.register(ModCommands.class);
-        NeoForge.EVENT_BUS.register(PLAYING_SOUNDS);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
@@ -60,14 +57,15 @@ public class BackgroundMusicMod {
     }
 
     @SubscribeEvent
-    private static void clearSounds(LevelEvent.Unload ignoredCtx) {
-        for (int sid : PLAYING_SOUNDS.get().keySet()) {
+    private void clearSounds(LevelEvent.Unload ignoredCtx) {
+        for (int sid : PLAYING_SOUNDS.keySet()) {
             Sounds.stopSound(sid);
         }
+        PLAYING_SOUNDS.clear();
     }
 
     public static void clearSounds() {
-        for (int sid : PLAYING_SOUNDS.get().keySet()) {
+        for (int sid : PLAYING_SOUNDS.keySet()) {
             Sounds.stopSound(sid);
         }
     }
