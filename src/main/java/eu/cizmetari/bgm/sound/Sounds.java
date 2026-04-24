@@ -1,6 +1,9 @@
 package eu.cizmetari.bgm.sound;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import eu.cizmetari.bgm.BackgroundMusicMod;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
@@ -13,10 +16,11 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.nio.*;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class Sounds {
-    public static int playSound(Path filePath, boolean loop) {
+    public static int playSound(Path filePath, boolean loop) throws CommandSyntaxException {
         int sSource = AL10.alGenSources();
         int sBuffer = AL10.alGenBuffers();
 
@@ -36,7 +40,7 @@ public class Sounds {
         if (filePath.getFileName().toString().endsWith(".ogg")) {
             channels = BufferUtils.createIntBuffer(1);
             sampleRate = BufferUtils.createIntBuffer(1);
-            AL10.alBufferData(sBuffer, channels.get(0) == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16, STBVorbis.stb_vorbis_decode_filename(filePath.toString(), channels, sampleRate), sampleRate.get(0));
+            AL10.alBufferData(sBuffer, channels.get(0) == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16, Objects.requireNonNull(STBVorbis.stb_vorbis_decode_filename(filePath.toString(), channels, sampleRate)), sampleRate.get(0));
         } else if (filePath.getFileName().toString().endsWith(".wav")) {
             try (AudioInputStream wavStream = AudioSystem.getAudioInputStream(filePath.toFile())) {
                 wavFormat = wavStream.getFormat();
@@ -57,7 +61,7 @@ public class Sounds {
         AL10.alSourcei(sSource, AL10.AL_BUFFER, sBuffer);
 
         AL10.alSourcePlay(sSource);
-        BackgroundMusicMod.PLAYING_SOUNDS.get().put(sSource, new SoundEntry(filePath.toAbsolutePath().normalize(), loop));
+        BackgroundMusicMod.PLAYING_SOUNDS.put(sSource, new SoundEntry(filePath.toAbsolutePath().normalize(), loop));
 
         if (!loop) {
             CompletableFuture<Void> autodelete = CompletableFuture.runAsync(() -> {
@@ -75,7 +79,7 @@ public class Sounds {
 
     public static void stopSound(int id) {
         AL10.alSourceStop(id);
-        BackgroundMusicMod.PLAYING_SOUNDS.get().remove(id);
+        BackgroundMusicMod.PLAYING_SOUNDS.remove(id);
         int bufferID = AL10.alGetSourcei(id, AL10.AL_BUFFER);
         AL10.alSourcei(id, AL10.AL_BUFFER, 0);
         AL10.alDeleteBuffers(bufferID);

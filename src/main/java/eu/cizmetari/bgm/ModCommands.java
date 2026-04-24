@@ -19,6 +19,7 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ModCommands {
@@ -44,7 +45,7 @@ public class ModCommands {
                                                 Commands.argument("id", IntegerArgumentType.integer())
                                                         .executes(ctx -> {
                                                             int id = IntegerArgumentType.getInteger(ctx, "id");
-                                                            if (!(BackgroundMusicMod.PLAYING_SOUNDS.get().containsKey(id))) {
+                                                            if (!(BackgroundMusicMod.PLAYING_SOUNDS.containsKey(id))) {
                                                                 throw new SimpleCommandExceptionType(Component.literal("ID is not valid!")).create();
                                                             }
                                                             Sounds.stopSound(id);
@@ -55,12 +56,13 @@ public class ModCommands {
                         .then(
                                 Commands.literal("list")
                                         .executes(ctx -> {
-                                            StringBuilder toSend = new StringBuilder();
-                                            for (Map.Entry<Integer, SoundEntry> entry : BackgroundMusicMod.PLAYING_SOUNDS.get().entrySet()) {
-                                                toSend.append(String.format("%s (%s)\n", entry.getKey(), entry.getValue().playingFile()));
+                                            ArrayList<String> lines = new ArrayList<>();
+                                            for (Map.Entry<Integer, SoundEntry> entry : BackgroundMusicMod.PLAYING_SOUNDS.entrySet()) {
+                                                lines.add(String.format("%s (%s)", entry.getKey(), entry.getValue().playingFile()));
                                             }
-                                            toSend.setLength(toSend.length() - 1);
-                                            Minecraft.getInstance().player.sendSystemMessage(Component.literal(toSend.toString()));
+                                            if (!lines.isEmpty()) {
+                                                Minecraft.getInstance().player.sendSystemMessage(Component.literal(String.join("\n", lines)));
+                                            }
                                             return 1;
                                         })
                         )
@@ -84,8 +86,8 @@ public class ModCommands {
                                                             if (Files.notExists(path)) {
                                                                 throw new SimpleCommandExceptionType(Component.literal("File does not exist!")).create();
                                                             }
-                                                            for (Map.Entry<Integer, SoundEntry> kv : BackgroundMusicMod.PLAYING_SOUNDS.get().entrySet()) {
-                                                                if (kv.getValue().playingFile() == path) {
+                                                            for (Map.Entry<Integer, SoundEntry> kv : BackgroundMusicMod.PLAYING_SOUNDS.entrySet()) {
+                                                                if (kv.getValue().playingFile().equals(path)) {
                                                                     Sounds.stopSound(kv.getKey());
                                                                 }
                                                             }
@@ -109,7 +111,11 @@ public class ModCommands {
         if (Files.notExists(path)) {
             throw new SimpleCommandExceptionType(Component.literal("File does not exist!")).create();
         }
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal(String.valueOf(Sounds.playSound(path, loop))));
+        try {
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal(String.valueOf(Sounds.playSound(path, loop))));
+        } catch (RuntimeException e) {
+            throw new SimpleCommandExceptionType(e::getMessage).create();
+        }
         return 1;
     }
 }
