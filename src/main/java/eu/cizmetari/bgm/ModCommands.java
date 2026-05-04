@@ -95,6 +95,18 @@ public class ModCommands {
                                                         })
                                         )
                         )
+                        .then(Commands.literal("debug")
+                                .then(Commands.literal("pwd")
+                                        .executes(ctx -> {
+                                            Minecraft.getInstance().player.sendSystemMessage(Component.literal(System.getProperty("user.dir")));
+                                            return 1;
+                                        }))
+                                .then(Commands.literal("whoami")
+                                        .executes(ctx -> {
+                                            Minecraft.getInstance().player.sendSystemMessage(Component.literal(System.getProperty("user.name")));
+                                            return 1;
+                                        }))
+                        )
         );
     }
 
